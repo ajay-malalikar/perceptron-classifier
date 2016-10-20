@@ -40,8 +40,9 @@ def main():
             if j == 0:
                 alpha = 0
             else:
-                if word in vocab:
-                    alpha += vocab[word]
+                for word in content:
+                    if word in vocab:
+                        alpha += vocab[word]
             if y*alpha <= 0:
                 for word in content:
                     if word in vocab:
