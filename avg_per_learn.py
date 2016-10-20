@@ -1,19 +1,17 @@
 import os
 import sys
 import random
-import timeit
 import json
-max_iter = 20
+max_iter = 30
 
-def main():
-    path = "train"
+
+def main(path):
     file_list = []
-    b = 0
     vocab = {}
-    weighted_vocab = {}
+    file_contents = {}
+    b = 0
     beta = 0
     c = 1
-    file_contents = {}
 
     for root, subdir, files in os.walk(path):
         if len(files):
@@ -34,9 +32,8 @@ def main():
             # Avoid opening and reading the file for each iteration. So save it in dictionary
             if i == 0:
                 with open(file_path, "r", encoding="latin1") as fs:
-                    if i == 0:
-                        content = fs.read().strip().split()
-                        file_contents[file_path] = content
+                    content = fs.read().strip().split()
+                    file_contents[file_path] = content
             else:
                 content = file_contents[file_path]
             if j == 0:
@@ -55,9 +52,12 @@ def main():
                         vocab[word] = [y, y*c]
                 b += y
                 beta += y * c
+            c += 1
+
+    weighted_vocab = {}
     for k, v in vocab.items():
         weighted_vocab[k] = vocab[k][0] - ((1 / c) * vocab[k][1])
-    beta = 1 - ((1 / c) * beta)
+    beta = b - ((1 / c) * beta)
 
     model = (weighted_vocab, beta)
     with open("per_model.txt", 'w') as fs:
@@ -65,14 +65,4 @@ def main():
 
 
 if __name__ == "__main__":
-    start = timeit.default_timer()
-    main()
-    end = timeit.default_timer()
-    print("Avg process:" + str(end - start))
-    import cProfile
-    cProfile.run('main()', 'myFunction.profile')
-
-
-import pstats
-stats = pstats.Stats('myFunction.profile')
-stats.strip_dirs().sort_stats('time').print_stats()
+    main(sys.argv[1])

@@ -1,13 +1,10 @@
 import os
 import sys
 import random
-import timeit
 import json
 max_iter = 20
-import cProfile
 
-def main():
-    path = "train"
+def main(path):
     file_list = []
     b = 0
     vocab = {}
@@ -32,9 +29,8 @@ def main():
             # Avoid opening and reading the file for each iteration. So save it in dictionary
             if i == 0:
                 with open(file_path, "r", encoding="latin1") as fs:
-                    if i == 0:
-                        content = fs.read().strip().split()
-                        file_contents[file_path] = content
+                    content = fs.read().strip().split()
+                    file_contents[file_path] = content
             else:
                 content = file_contents[file_path]
             if j == 0:
@@ -56,13 +52,4 @@ def main():
 
 
 if __name__ == "__main__":
-    start = timeit.default_timer()
-    main()
-    end = timeit.default_timer()
-    print("Update process:" + str(end - start))
-    cProfile.run('main()', 'myFunction.profile')
-
-
-import pstats
-stats = pstats.Stats('myFunction.profile')
-stats.strip_dirs().sort_stats('time').print_stats()
+    main(sys.argv[1])
